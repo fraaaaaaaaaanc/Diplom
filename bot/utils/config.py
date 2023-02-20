@@ -3,7 +3,6 @@ from typing import Final
 
 class Token_Api():
 
-    TOKEN_API: Final =  environ.get('TOKEN_API')
-
+    TOKEN_API: Final = environ.get('TOKEN_API')
 
 

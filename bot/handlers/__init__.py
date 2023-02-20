@@ -1,1 +1,1 @@
-from . import command_start, input_cmd
+from . import command_start, main_commands
