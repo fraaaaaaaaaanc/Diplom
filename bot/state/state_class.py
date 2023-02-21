@@ -4,6 +4,9 @@ from aiogram.dispatcher.filters.state import StatesGroup, State
 class Student(StatesGroup):
 
     student = State()
+    student_get_task = State()
+    student_get_manual = State()
+    student_check_lab = State()
 
 
 class Student_LogIn_State(StatesGroup):
@@ -28,6 +31,7 @@ class Teacher(StatesGroup):
     teacher_delete_group = State()
     teacher_get_list_student = State()
     teacher_delete_student = State()
+    teacher_change_token = State()
 
 
 class Teachet_LogIn_State(StatesGroup):

@@ -3,8 +3,16 @@ from aiogram.dispatcher import FSMContext
 
 from .utils import Main_Teacher_Menu_Text
 from bot.keyboard import Main_Teacher_Menu, Main_Menu
+from .utils import List_State_Teacher
 from bot.state import Teacher
-from bot.db_work import Add_Group, Delete_Group, Get_Group_list, Get_StudentList, Delete_Student
+from bot.db_work import Add_Group, Delete_Group, Get_Group_list, Get_StudentList, Delete_Student, Change_Token
+
+
+async def Cmd_Stop_Teacher(message: types.Message):
+    await message.answer('Вы отсановили выбранную команду. '
+                         'В меню вы можете выбрать другую команду.',
+                         reply_markup=await Main_Teacher_Menu())
+    await Teacher.teacher.set()
 
 
 async def Cmd_Menu_Teacher(message: types.Message):
@@ -107,7 +115,15 @@ async def Teacher_Delete_Student(message: types.Message):
 
 
 async def Cmd_Change_Token(message: types.Message):
-    pass
+    await message.answer('Для того чтобы сменить, токен введите новый.',
+                         reply_markup= types.ReplyKeyboardRemove())
+    await Teacher.teacher_change_token.set()
+
+
+async def Teacher_Change_Token(message: types.Message):
+    await Change_Token(message.text)
+    await message.answer(f'Токен успешно изменен на "{message.text}"')
+    await Teacher.teacher.set()
 
 
 async def Cmd_Exit(message: types.Message, state: FSMContext):
@@ -116,7 +132,17 @@ async def Cmd_Exit(message: types.Message, state: FSMContext):
     await state.finish()
 
 
+async def No_Cmd_Text(message: types.Message):
+    await message.answer('Вы ввели команду которую я не могу понять('
+                         'Чтобы посмотреть список команд и их функции отправьте команду /Help '
+                         'или выберите команду из меню',
+                         reply_markup=await Main_Teacher_Menu())
+
+
 def register_handler(dp: Dispatcher):
+    dp.register_message_handler(Cmd_Stop_Teacher,
+                                commands=['Stop'],
+                                state=List_State_Teacher)
     dp.register_message_handler(Cmd_Menu_Teacher,
                                 commands=['Menu'],
                                 state=Teacher.teacher)
@@ -148,6 +174,13 @@ def register_handler(dp: Dispatcher):
                                 state=Teacher.teacher)
     dp.register_message_handler(Teacher_Delete_Student,
                                 state=Teacher.teacher_delete_student)
+    dp.register_message_handler(Cmd_Change_Token,
+                                commands=['ChangeToken'],
+                                state=Teacher.teacher)
+    dp.register_message_handler(Teacher_Change_Token,
+                                state=Teacher.teacher_change_token)
     dp.register_message_handler(Cmd_Exit,
                                 commands=['Exit'],
+                                state=Teacher.teacher)
+    dp.register_message_handler(No_Cmd_Text,
                                 state=Teacher.teacher)

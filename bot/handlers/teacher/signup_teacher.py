@@ -2,7 +2,6 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
 from bot.state import Teacher, Teacher_SignUp_State
-from .utils import TOKEN_Teacher
 from bot.db_work import Add_New_Profile_Teacher, Search_date_DB, Delete_Record
 from bot.keyboard import teacher_delete_or_login_inline_keyboard, Main_Teacher_Menu
 
@@ -24,7 +23,7 @@ async def Delete_Teacher_Profile(callback: types.CallbackQuery):
 
 
 async def SignUp_Teacher_Input_LogIn(message: types.Message, state: FSMContext):
-    if TOKEN_Teacher == message.text:
+    if await Search_date_DB('TOKEN', 'TOKEN', message.text):
         async with state.proxy() as data:
             data['user_id'] = message.from_user.id
         await message.answer('Придумайте свой логин.')

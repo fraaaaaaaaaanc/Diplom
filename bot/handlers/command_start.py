@@ -1,6 +1,6 @@
 from aiogram import types, Dispatcher
 
-from bot.keyboard import list_group_inline_keyboard, signup_inline_keyboard
+from bot.keyboard import signup_inline_keyboard
 
 
 async def Cmd_Start(message: types.Message):

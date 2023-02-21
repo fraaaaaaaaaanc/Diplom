@@ -11,6 +11,7 @@ async def db_start():  # Подключение к базе дыннх и соз
     cur.execute("CREATE TABLE IF NOT EXISTS Group_students(id INTEGER PRIMARY KEY, 'group' TEXT)")
     cur.execute("CREATE TABLE IF NOT EXISTS Students_info(id INTEGER PRIMARY KEY, user_chat_id INTEGER, 'group' TEXT, name TEXT, password TEXT)")
     cur.execute("CREATE TABLE IF NOT EXISTS Teacher_profile(id INTEGER PRIMARY KEY, user_chat_id INTEGER, name TEXT, password TEXT)")
+    cur.execute("CREATE TABLE IF NOT EXISTS TOKEN(id INTEGER PRIMARY KEY, 'TOKEN' TEXT)")
 
     db.commit()
 
@@ -89,6 +90,12 @@ async def Get_StudentList(data):
         students_list = cur.execute(f"""SELECT "name" FROM Students_info WHERE "group" == '{data}'""").fetchall()
         return students_list
     return False
+
+
+async def Change_Token(data):
+    cur.execute(f"""DELETE from TOKEN WHERE "id" == '1'""").fetchall()
+    cur.execute(f"""INSERT INTO TOKEN ("TOKEN") VALUES ('{data}')""")
+    db.commit()
 
 
 async def Close_DB():

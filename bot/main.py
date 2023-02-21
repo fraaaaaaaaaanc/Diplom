@@ -22,6 +22,7 @@ def start_bot():
 
     stop_cmd_student.register_handler(dp)
     main_student_cmd.register_handler(dp)
+    main_student_cmd.register_callback_handler(dp)
     login_student.register_handler(dp)
     login_student.register_callback_handler(dp)
     signup_student.register_handler(dp)

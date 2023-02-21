@@ -13,18 +13,13 @@ async def Start_Menu(message: types.Message):
 async def Cmd_LogIn(message: types.Message):
     await message.answer('Для начала выберите как бы вы хотите войти!\n'
                          'Как...',
-                         reply_markup= await login_inline_keyboard())
+                         reply_markup = await login_inline_keyboard())
 
 
 async def Cmd_SignUP(message: types.Message):
     await message.answer('Для начала выберите как бы вы хотите зарегестрироваться!\n'
                          'Как...',
-                         reply_markup= await signup_inline_keyboard())
-
-
-async def Cmd_Exit(message: types.Message, state: FSMContext):
-    await message.answer('Удачи!')
-    await state.finish()
+                         reply_markup = await signup_inline_keyboard())
 
 
 async def Teacher_test(message: types.Message):
@@ -35,7 +30,7 @@ async def Teacher_test(message: types.Message):
 
 async def Student_test(message: types.Message):
     await message.answer('Тест профиля Студента.',
-                         reply_markup= await Main_Teacher_Menu())
+                         reply_markup= await Main_Student_Menu())
     await Student.student.set()
 
 
@@ -46,9 +41,6 @@ def register_handler(dp: Dispatcher):
                                 commands=['LogIn'])
     dp.register_message_handler(Cmd_SignUP,
                                 commands=['SignUp'])
-    dp.register_message_handler(Cmd_Exit,
-                                commands=['Exit'],
-                                state=Student.student)
     dp.register_message_handler(Teacher_test,
                                 commands=['Teacher'])
     dp.register_message_handler(Student_test,

@@ -50,6 +50,20 @@ async def signup_or_create_account():
     return choice_ikb
 
 
+async def student_change_manual_or_task():
+    change_ikb = InlineKeyboardMarkup(resize_keyboard=True, inline_keyboard=[
+        [InlineKeyboardButton('1', callback_data='1'),
+         InlineKeyboardButton('2', callback_data='2')],
+        [InlineKeyboardButton('3', callback_data='3'),
+         InlineKeyboardButton('4', callback_data='4')],
+        [InlineKeyboardButton('5', callback_data='5'),
+         InlineKeyboardButton('6', callback_data='6')],
+    ])
+
+    return change_ikb
+
+
+
 async def list_group_inline_keyboard(): # инлайн клавиатура списка групп предлагающася студенту у которого уже есть аккаунт
     flag = 0
     group_ikb = InlineKeyboardMarkup(resize_keyboard=True)

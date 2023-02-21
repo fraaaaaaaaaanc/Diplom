@@ -1,1 +1,1 @@
-from .misc import TOKEN_Teacher, Main_Teacher_Menu_Text
+from .misc import List_State_Teacher, Main_Teacher_Menu_Text
