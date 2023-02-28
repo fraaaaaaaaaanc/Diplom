@@ -7,7 +7,7 @@ from bot.keyboard import signup_or_create_account, Main_Teacher_Menu
 
 async def Teacher_Input_Name(callback: types.CallbackQuery):
     if await Search_date_DB('user_chat_id', 'Teacher_profile', callback.from_user.id):
-        await callback.message.edit_text('Введите ваш логин!')
+        await callback.message.answer('Введите ваш логин!')
         await Teachet_LogIn_State.Teacher_Inpout_Password.set()
     else:
         await callback.message.answer('У вас еще нет аккаунта преподователя в данном боте.'

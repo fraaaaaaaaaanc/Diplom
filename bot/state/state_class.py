@@ -6,7 +6,11 @@ class Student(StatesGroup):
     student = State()
     student_get_task = State()
     student_get_manual = State()
-    student_check_lab = State()
+    student_input_lab_number = State()
+    student_send_file = State()
+    test_file = State()
+    student_get_res_test_file = State()
+    student_change_name = State()
 
 
 class Student_LogIn_State(StatesGroup):

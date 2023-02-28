@@ -5,7 +5,8 @@ async def Main_Student_Menu():
     menu_student = ReplyKeyboardMarkup(resize_keyboard=True,
                                        keyboard=[
         [KeyboardButton('/GetTask'), KeyboardButton('/GetManual')],
-        [KeyboardButton('/CheckLab'), KeyboardButton('/Exit')]
+        [KeyboardButton('/CheckLab'), KeyboardButton('/ChangeName')],
+        [KeyboardButton('/Exit')]
     ])
 
     return menu_student

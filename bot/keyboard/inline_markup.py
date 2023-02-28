@@ -50,7 +50,7 @@ async def signup_or_create_account():
     return choice_ikb
 
 
-async def student_change_manual_or_task():
+async def student_change_number_lab():
     change_ikb = InlineKeyboardMarkup(resize_keyboard=True, inline_keyboard=[
         [InlineKeyboardButton('1', callback_data='1'),
          InlineKeyboardButton('2', callback_data='2')],

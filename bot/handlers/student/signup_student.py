@@ -36,7 +36,7 @@ async def SignUp_Student_Input_Name(message: types.Message, state: FSMContext):
 
 async def SignUp_Student_Input_Password(message: types.Message, state: FSMContext):
     async with state.proxy() as data:
-        data['student_name'] = message.text
+        data['student_name'] = message.text.title()
     await message.answer('Супер! Теперь введите ваш пароль!')
     await Student_SignUp_State.Student_SignUp_End.set()
 

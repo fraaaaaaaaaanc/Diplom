@@ -103,7 +103,7 @@ async def Cmd_Delete_Student(message: types.Message):
 
 
 async def Teacher_Delete_Student(message: types.Message):
-    if await Delete_Student(message.text):
+    if await Delete_Student(message.text.title()):
         await message.answer(f'Студент {message.text} успешно удален из списка студентов.',
                              reply_markup= await Main_Teacher_Menu())
     else:
@@ -122,7 +122,8 @@ async def Cmd_Change_Token(message: types.Message):
 
 async def Teacher_Change_Token(message: types.Message):
     await Change_Token(message.text)
-    await message.answer(f'Токен успешно изменен на "{message.text}"')
+    await message.answer(f'Токен успешно изменен на "{message.text}"',
+                         reply_markup= await Main_Teacher_Menu())
     await Teacher.teacher.set()
 
 
@@ -130,6 +131,12 @@ async def Cmd_Exit(message: types.Message, state: FSMContext):
     await message.answer('Вы вышли из аккаунта преподователя.',
                          reply_markup= await Main_Menu())
     await state.finish()
+
+
+async def Cmd_Stop_No_State(message: types.Message):
+    await message.answer('Вы еще не начали какое-либо действие чтобы его остановить для начала выберите '
+                         'какую-либо команду из меню или отправьте команду /Help',
+                         reply_markup=await Main_Teacher_Menu())
 
 
 async def No_Cmd_Text(message: types.Message):
@@ -181,6 +188,9 @@ def register_handler(dp: Dispatcher):
                                 state=Teacher.teacher_change_token)
     dp.register_message_handler(Cmd_Exit,
                                 commands=['Exit'],
+                                state=Teacher.teacher)
+    dp.register_message_handler(Cmd_Stop_No_State,
+                                commands=['Stop'],
                                 state=Teacher.teacher)
     dp.register_message_handler(No_Cmd_Text,
                                 state=Teacher.teacher)

@@ -8,12 +8,12 @@ from bot.db_work import db_regist as db
 
 
 async def on_startup(_):
-    await db.db_start()
+    # await db.db_start()
     print('Бот запустился!')
 
 
-async def on_shutdown(_):
-    await db.Close_DB()
+# async def on_shutdown(_):
+#     await db.Close_DB()
 
 
 def start_bot():
@@ -38,5 +38,5 @@ def start_bot():
 
     executor.start_polling(dp,
                            skip_updates=True,
-                           on_startup=on_startup,
-                           on_shutdown=on_shutdown)
+                           on_startup=on_startup)
+                           # on_shutdown=on_shutdown

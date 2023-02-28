@@ -16,7 +16,7 @@ async def Student_Choice_Group(callback: types.CallbackQuery):
 
 async def Student_Input_Name(callback: types.CallbackQuery):
     if await Search_userId_date_DB('Students_info', 'group', callback.from_user.id, callback.data):
-        await callback.message.edit_text('Введите ваши фамилию и имя')
+        await callback.message.answer('Введите ваши фамилию и имя')
         await Student_LogIn_State.Student_Inpout_Password.set()
     else:
         await callback.message.edit_text('Вас нет в выбранной группе, попробуйте выбрать группу еще раз.',
@@ -24,7 +24,7 @@ async def Student_Input_Name(callback: types.CallbackQuery):
 
 
 async def Student_Input_Password(message: types.Message):
-    if await Search_userId_date_DB('Students_info', 'name', message.from_user.id, message.text):
+    if await Search_userId_date_DB('Students_info', 'name', message.from_user.id, message.text.title()):
         await message.answer('Отилчно! Теперь введите ваш пароль.')
         await Student_LogIn_State.Student_End_Login.set()
     else:
