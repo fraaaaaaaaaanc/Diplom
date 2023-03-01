@@ -6,7 +6,7 @@ from .utils import Main_Student_Menu_Text, List_Student_State, Get_File_Path
 from bot.state import Student
 from bot.keyboard import Main_Student_Menu, student_change_number_lab, Main_Menu
 from bot.db_work import Change_Name, Search_Task_DB, Get_Test_DB
-from Test_Package import test_start
+from Test_Package import test_start, get_description
 
 
 async def Cmd_Stop_Student(message: types.Message):
@@ -64,11 +64,16 @@ async def Cmd_Check_Lab(message: types.Message):
     await Student.student_input_lab_number.set()
 
 
+async def No_Callback(message: types.Message):
+    await message.answer('Для начала выберите номер лабороторной работы или отправьте команду /Stop '
+                                  'если хотите остановить выбранное действие.')
+
 async def Student_Input_Number_Task(callback: types.CallbackQuery, state: FSMContext):
-    async with state.proxy() as data:
-        data['number_lab'] = callback.data
-    await callback.message.answer(f'Введите номер вашего задания для лабораторной №{callback.data}.')
-    await Student.student_send_file.set()
+        async with state.proxy() as data:
+            data['number_lab'] = callback.data
+        await callback.message.answer(f'Введите номер вашего задания для лабораторной №{callback.data}.')
+        await Student.student_send_file.set()
+
 
 
 async def Student_Send_File(message: types.Message, state: FSMContext):
@@ -77,8 +82,9 @@ async def Student_Send_File(message: types.Message, state: FSMContext):
     estimation = await Search_Task_DB(state)
     if estimation:
         await message.answer(f"Ваше задание для лабораторной работы №{data['number_lab']} оценивается в данном"
-                            f" диапазоне: {estimation}. Для того чтобы приступить к проверке задания отпарвьте сюда" 
-                            f" ваш файл.")
+                            f" диапазоне: {estimation}. Для того чтобы приступить к проверке задания прочитайте "
+                             f"инструкцию к отпарвке файла ниже.")
+        await message.answer(await get_description(state))
         await Student.test_file.set()
     else:
         await message.answer(f"К сожалению задания с таким номером нет, поппробуйте ввести его еще раз.")
@@ -96,17 +102,12 @@ async def Processing_File(message: types.Message, state: FSMContext):
         erorr_list = await test_start(state)
         if not erorr_list:
             await message.answer('Отлично! Данное решение прошло все проверки.')
+        elif erorr_list == 1:
+            pass
         else:
-            await message.answer(f'Ваше решение не прошло тесты для чисел {erorr_list} '
-                       f'попробуйте решить задание по другому и повторите попытку проверки.')
+            await message.answer(f'Ваше решение не прошло тесты по причине {erorr_list}\n'
+                       f'Попробуйте решить задание по другому и повторите попытку проверки.')
         await Student.student.set()
-
-
-async def Get_Res_Test_File(message: types.Message, state: FSMContext):
-    await message.answer(await test_start(state))
-    await message.answer('Выберите команду!',
-                         reply_markup= await Main_Student_Menu())
-    await Student.student.set()
 
 
 async def Cmd_Change_Name(message: types.Message):
@@ -159,6 +160,8 @@ def register_handler(dp: Dispatcher):
     dp.register_message_handler(Cmd_Check_Lab,
                                 commands=['CheckLab'],
                                 state=Student.student)
+    dp.register_message_handler(No_Callback,
+                                state=Student.student_input_lab_number)
     dp.register_message_handler(Student_Input_Number_Task,
                                 state=Student.student_input_lab_number)
     dp.register_message_handler(Student_Send_File,
@@ -166,8 +169,6 @@ def register_handler(dp: Dispatcher):
     dp.register_message_handler(Processing_File,
                                 content_types=['document'],
                                 state=Student.test_file)
-    dp.register_message_handler(Get_Res_Test_File,
-                                state=Student.student_get_res_test_file)
     dp.register_message_handler(Cmd_Change_Name,
                                 commands=['ChangeName'],
                                 state=Student.student)

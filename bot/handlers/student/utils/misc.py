@@ -16,7 +16,10 @@ Main_Student_Menu_Text =  '''
 List_Student_State = [
     Student.student_get_task,
     Student.student_get_manual,
-    Student.student_change_name
+    Student.student_change_name,
+    Student.student_input_lab_number,
+    Student.student_send_file,
+    Student.test_file
 ]
 
 async def Get_File_Path(file_name, state):
