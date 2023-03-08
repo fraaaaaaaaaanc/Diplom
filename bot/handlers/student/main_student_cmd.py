@@ -5,7 +5,8 @@ import os
 from .utils import Main_Student_Menu_Text, List_Student_State, Get_File_Path
 from bot.state import Student
 from bot.keyboard import Main_Student_Menu, student_change_number_lab, Main_Menu
-from bot.db_work import Change_Name, Search_Task_DB, Get_Test_DB
+from bot.db_work import Change_Name, Search_Task_DB, Get_Record
+from bot.exel_work import visual_edit_excel
 from Test_Package import test_start, get_description
 
 
@@ -71,6 +72,9 @@ async def No_Callback(message: types.Message):
 async def Student_Input_Number_Task(callback: types.CallbackQuery, state: FSMContext):
         async with state.proxy() as data:
             data['number_lab'] = callback.data
+            data['group'] = await Get_Record('Students_info', 'group', callback.from_user.id)
+            data['student_name'] = await Get_Record('Students_info', 'name', callback.from_user.id)
+            data['user_chat_id'] = await Get_Record('Students_info', 'user_chat_id', callback.from_user.id)
         await callback.message.answer(f'Введите номер вашего задания для лабораторной №{callback.data}.')
         await Student.student_send_file.set()
 
@@ -102,11 +106,11 @@ async def Processing_File(message: types.Message, state: FSMContext):
         erorr_list = await test_start(state)
         if not erorr_list:
             await message.answer('Отлично! Данное решение прошло все проверки.')
-        elif erorr_list == 1:
-            pass
+            await visual_edit_excel(state, "successful")
         else:
-            await message.answer(f'Ваше решение не прошло тесты по причине {erorr_list}\n'
+            await message.answer(f'Ваше решение не прошло тесты по причине: {erorr_list}\n'
                        f'Попробуйте решить задание по другому и повторите попытку проверки.')
+            await visual_edit_excel(state, "unsuccessful")
         await Student.student.set()
 
 

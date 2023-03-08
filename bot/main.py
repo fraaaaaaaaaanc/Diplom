@@ -30,6 +30,7 @@ def start_bot():
 
     stop_cmd_teacher.register_handler(dp)
     main_teacher_cmd.register_handler(dp)
+    main_teacher_cmd.register_callback_handler(dp)
     login_teacher.register_handler(dp)
     login_teacher.register_callback_handler(dp)
     signup_teacher.register_handler(dp)

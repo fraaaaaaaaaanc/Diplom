@@ -3,8 +3,10 @@ from aiogram.dispatcher import FSMContext
 
 
 from bot.state import Student, Student_SignUp_State
-from bot.db_work import Search_date_DB, Add_New_Profile_Student, Delete_Record
+from bot.db_work import Search_date_DB, Add_New_Profile_Student, Delete_Record, Get_Record
 from bot.keyboard import student_delete_or_login_inline_keyboard, Main_Student_Menu
+from bot.exel_work import add_in_excel
+
 
 async def SignUp_Student(callback: types.CallbackQuery, state: FSMContext):
     if not await Search_date_DB('user_chat_id', 'Students_info', callback.from_user.id):
@@ -18,7 +20,10 @@ async def SignUp_Student(callback: types.CallbackQuery, state: FSMContext):
                                       reply_markup= await student_delete_or_login_inline_keyboard())
 
 
-async def Delete_Student_Profile(callback: types.CallbackQuery):
+async def Delete_Student_Profile(callback: types.CallbackQuery, state: FSMContext):
+    async with state.proxy() as data:
+        data['group'] = await Get_Record('Students_info', 'group', callback.from_user.id)
+        data['name'] = await Get_Record('Students_info', 'name', callback.from_user.id)
     await Delete_Record('Students_info', 'user_chat_id', callback.from_user.id)
     await callback.message.answer('Ваш профиль успешно удален!'
                                   'Вы можете создать новый профиль студента отправив команду /SignUp')
@@ -47,6 +52,7 @@ async def SignUp_Student_End(message: types.Message, state: FSMContext):
     await message.delete()
     await message.answer(await Add_New_Profile_Student(state),
                          reply_markup= await Main_Student_Menu())
+    await add_in_excel(state)
     await Student.student.set()
 
 

@@ -2,10 +2,12 @@ from aiogram import types, Dispatcher
 from aiogram.dispatcher import FSMContext
 
 from .utils import Main_Teacher_Menu_Text
-from bot.keyboard import Main_Teacher_Menu, Main_Menu
+from bot.keyboard import Main_Teacher_Menu, Main_Menu, list_group_inline_keyboard
 from .utils import List_State_Teacher
 from bot.state import Teacher
-from bot.db_work import Add_Group, Delete_Group, Get_Group_list, Get_StudentList, Delete_Student, Change_Token
+from bot.db_work import Add_Group, Delete_Group, Get_Group_list, Get_StudentList, Delete_Student, Change_Token, \
+    Get_Record
+from bot.exel_work import create_excel_file, delete_row_excel
 
 
 async def Cmd_Stop_Teacher(message: types.Message):
@@ -35,6 +37,7 @@ async def Teacher_AddGroup(message: types.Message):
     if await Add_Group(message.text.upper()):
         await message.answer(f'Группа {message.text.upper()}, успешно добавлена в список групп.',
                              reply_markup= await Main_Teacher_Menu())
+        await create_excel_file(message.text.upper())
     else:
         await message.answer(f'Група {message.text.upper()} уже есть в списке групп, попробуйте '
                              f'отправить команду /GroupList для просмотра списка групп, затем попробуйте '
@@ -102,7 +105,11 @@ async def Cmd_Delete_Student(message: types.Message):
     await Teacher.teacher_delete_student.set()
 
 
-async def Teacher_Delete_Student(message: types.Message):
+async def Teacher_Delete_Student(message: types.Message, state: FSMContext):
+    async with state.proxy() as data:
+        data['group'] = await Get_Record('Students_info', 'group', message.from_user.id)
+        data['student_name'] = await Get_Record('Students_info', 'name', message.from_user.id)
+    await delete_row_excel(state)
     if await Delete_Student(message.text.title()):
         await message.answer(f'Студент {message.text} успешно удален из списка студентов.',
                              reply_markup= await Main_Teacher_Menu())
@@ -124,6 +131,22 @@ async def Teacher_Change_Token(message: types.Message):
     await Change_Token(message.text)
     await message.answer(f'Токен успешно изменен на "{message.text}"',
                          reply_markup= await Main_Teacher_Menu())
+    await Teacher.teacher.set()
+
+
+async def Cmd_Get_Excel(message: types.Message):
+    await message.answer("Выберете группу для которой вы хотите получить excel файл.",
+                         reply_markup= await list_group_inline_keyboard())
+    await Teacher.teacher_get_excel_file.set()
+
+
+async def Sendibg_File(callback: types.CallbackQuery):
+    await callback.message.answer_document(open(f'C:\pythonProject\Main_Diplom\excel_files'
+                                                f'\{callback.data}.xlsx', 'rb'),
+                                           caption=f'Excel файл, с информацией о группе '
+                                                   f'{callback.data}.')
+    await callback.message.answer('Для того чтобы продолжить работу, выберите новую команду!',
+                                  reply_markup=await Main_Teacher_Menu())
     await Teacher.teacher.set()
 
 
@@ -186,6 +209,9 @@ def register_handler(dp: Dispatcher):
                                 state=Teacher.teacher)
     dp.register_message_handler(Teacher_Change_Token,
                                 state=Teacher.teacher_change_token)
+    dp.register_message_handler(Cmd_Get_Excel,
+                                commands=['GetExcel'],
+                                state=Teacher.teacher)
     dp.register_message_handler(Cmd_Exit,
                                 commands=['Exit'],
                                 state=Teacher.teacher)
@@ -194,3 +220,8 @@ def register_handler(dp: Dispatcher):
                                 state=Teacher.teacher)
     dp.register_message_handler(No_Cmd_Text,
                                 state=Teacher.teacher)
+
+
+def register_callback_handler(dp: Dispatcher):
+    dp.register_callback_query_handler(Sendibg_File,
+                                      state=Teacher.teacher_get_excel_file)

@@ -35,6 +35,7 @@ class Teacher(StatesGroup):
     teacher_get_list_student = State()
     teacher_delete_student = State()
     teacher_change_token = State()
+    teacher_get_excel_file = State()
 
 
 class Teachet_LogIn_State(StatesGroup):

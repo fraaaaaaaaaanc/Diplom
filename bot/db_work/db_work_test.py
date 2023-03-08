@@ -13,6 +13,7 @@ async def db_start(number):  # Подключение к базе дыннх и 
 async def Search_Task_DB(state):
 
     async with state.proxy() as data:
+        print(data['number_task'])
         await db_start(data['number_lab'])
         if cur.execute(f"""SELECT "id" FROM "task_table" 
                        WHERE "id" == '{data['number_task']}'""").fetchall():

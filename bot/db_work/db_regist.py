@@ -162,5 +162,14 @@ async def Change_Name(data):
     db.close()
 
 
+async def Get_Record(table, column, data):
+
+    cur = await db_start()
+
+    record = cur.execute(f"""SELECT "{column}" FROM "{table}" WHERE "user_chat_id" == '{data}'""").fetchone()
+    db.close()
+    return record[0]
+
+
 
 
